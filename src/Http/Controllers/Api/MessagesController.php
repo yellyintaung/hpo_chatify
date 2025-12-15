@@ -245,7 +245,7 @@ class MessagesController extends Controller
      */
     public function fetch(Request $request)
     {
-        $query = Chatify::fetchMessagesQuery($request['id'], $request['auth_id'])->latest();
+        $query = Chatify::fetchMessagesQuery($request['id'], auth('sanctum')->user()->id)->latest();
         $messages = $query->paginate($request->per_page ?? $this->perPage);
         $decodedMessages = $messages->map(function ($message) {
             if ($message->attachment) {
