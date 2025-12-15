@@ -108,7 +108,7 @@ class ChatifyMessenger
             ]
         ]);
         // check if user authenticated
-        // if (auth('api')->check()) {
+        // if (auth('sanctum')->check()) {
             if($requestUser->id == $authUser->id){
                 return $this->pusher->socket_auth(
                     $channelName,
@@ -169,7 +169,7 @@ class ChatifyMessenger
             'timeAgo' => $msg->created_at->diffForHumans(),
             'created_at' => $msg->created_at->toIso8601String(),
             'sent_by' => $msg->sent_by,
-            // 'isSender' => ($msg->from_id == auth('api')->user()->id),
+            // 'isSender' => ($msg->from_id == auth('sanctum')->user()->id),
             'seen' => $msg->seen,
         ];
     }
@@ -232,7 +232,7 @@ class ChatifyMessenger
     public function makeSeen($user_id)
     {
         Message::Where('from_id', $user_id)
-                ->where('to_id', auth('api')->user()->id)
+                ->where('to_id', auth('sanctum')->user()->id)
                 ->where('seen', 0)
                 ->update(['seen' => 1]);
         return 1;
@@ -266,7 +266,7 @@ class ChatifyMessenger
      */
     public function countUnseenMessages($user_id)
     {
-        return Message::where('from_id', $user_id)->where('to_id', auth('api')->user()->id)->where('seen', 0)->count();
+        return Message::where('from_id', $user_id)->where('to_id', auth('sanctum')->user()->id)->where('seen', 0)->count();
     }
 
      public function countUnseenMessagesInWeb($user_id)
@@ -330,7 +330,7 @@ class ChatifyMessenger
      */
     public function inFavorite($user_id)
     {
-        return Favorite::where('user_id', auth('api')->user()->id)
+        return Favorite::where('user_id', auth('sanctum')->user()->id)
                         ->where('favorite_id', $user_id)->count() > 0
                         ? true : false;
     }
@@ -354,13 +354,13 @@ class ChatifyMessenger
         if ($action > 0) {
             // Star
             $star = new Favorite();
-            $star->user_id = auth('api')->user()->id;
+            $star->user_id = auth('sanctum')->user()->id;
             $star->favorite_id = $user_id;
             $star->save();
             return $star ? true : false;
         } else {
             // UnStar
-            $star = Favorite::where('user_id', auth('api')->user()->id)->where('favorite_id', $user_id)->delete();
+            $star = Favorite::where('user_id', auth('sanctum')->user()->id)->where('favorite_id', $user_id)->delete();
             return $star ? true : false;
         }
     }
