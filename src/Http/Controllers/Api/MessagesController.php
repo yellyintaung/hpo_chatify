@@ -136,7 +136,7 @@ class MessagesController extends Controller
                 'type' => $request['type'],
                 'from_id' => auth('sanctum')->user()->id,
                 'to_id' => $request['id'],
-                 'body' => trim($request['message']),
+                'body' => trim($request['message']),
                 'sent_by' => 'user',
                 'attachment' => ($attachment) ? json_encode((object)[
                     'new_name' => $attachment,
@@ -150,7 +150,7 @@ class MessagesController extends Controller
             // send to user using pusher
             // if (auth('sanctum')->user()->id != $request['id']) {
             Chatify::push("private-chatify." . $request['id'], 'messaging', [
-                'from_id' =>auth('sanctum')->user()->id,
+                'from_id' => auth('sanctum')->user()->id,
                 'to_id' => $request['id'],
                 'message' => Chatify::messageCard($messageData, true)
             ]);
@@ -391,8 +391,8 @@ class MessagesController extends Controller
     {
         $images = Chatify::getSharedPhotos($request['user_id']);
 
-        foreach ($images as $key=>$image) {
-            $images[$key] = asset('image/public/'.config('chatify.attachments.folder') . '/' . $image);
+        foreach ($images as $key => $image) {
+            $images[$key] = asset('storage/' . config('chatify.attachments.folder') . '/' . $image);
         }
         // send the response
         return Response::json([

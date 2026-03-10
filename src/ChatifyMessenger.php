@@ -109,15 +109,15 @@ class ChatifyMessenger
         ]);
         // check if user authenticated
         // if (auth('sanctum')->check()) {
-            if($requestUser->id == $authUser->id){
-                return $this->pusher->socket_auth(
-                    $channelName,
-                    $socket_id,
-                    $authData
-                );
-            }
+        if ($requestUser->id == $authUser->id) {
+            return $this->pusher->socket_auth(
+                $channelName,
+                $socket_id,
+                $authData
+            );
+        }
         // if[] not authorized
-            return response()->json(['message'=>'Unauthorized'], 401);
+        return response()->json(['message' => 'Unauthorized'], 401);
         // }
         // if not authenticated
         // return response()->json(['message'=>'Not authenticated'], 403);
@@ -141,7 +141,7 @@ class ChatifyMessenger
             $msg = $prefetchedMessage;
         } else {
             $msg = Message::where('id', $id)->first();
-            if(!$msg){
+            if (!$msg) {
                 return [];
             }
         }
@@ -186,7 +186,7 @@ class ChatifyMessenger
         if (!$data) {
             return '';
         }
-        if($renderDefaultCard) {
+        if ($renderDefaultCard) {
             $data['isSender'] =  false;
         }
         return view('Chatify::layouts.messageCard', $data)->render();
@@ -201,7 +201,7 @@ class ChatifyMessenger
     public function fetchMessagesQuery($user_id, $auth_id = 1)
     {
         return Message::where('from_id', $auth_id)->where('to_id', $user_id)
-                    ->orWhere('from_id', $user_id)->where('to_id', $auth_id);
+            ->orWhere('from_id', $user_id)->where('to_id', $auth_id);
     }
 
     /**
@@ -232,13 +232,13 @@ class ChatifyMessenger
     public function makeSeen($user_id)
     {
         Message::Where('from_id', $user_id)
-                ->where('to_id', auth('sanctum')->user()->id)
-                ->where('seen', 0)
-                ->update(['seen' => 1]);
+            ->where('to_id', auth('sanctum')->user()->id)
+            ->where('seen', 0)
+            ->update(['seen' => 1]);
         return 1;
     }
 
-     public function makeSeenInWeb($user_id)
+    public function makeSeenInWeb($user_id)
     {
         Message::Where('from_id', $user_id)
             ->where('to_id', auth('web')->user()->id)
@@ -269,7 +269,7 @@ class ChatifyMessenger
         return Message::where('from_id', $user_id)->where('to_id', auth('sanctum')->user()->id)->where('seen', 0)->count();
     }
 
-     public function countUnseenMessagesInWeb($user_id)
+    public function countUnseenMessagesInWeb($user_id)
     {
         return Message::where('from_id', $user_id)->where('to_id', auth('web')->user()->id)->where('seen', 0)->count();
     }
@@ -298,7 +298,7 @@ class ChatifyMessenger
                 'user' => $this->getUserWithAvatar($user),
                 'lastMessage' => $lastMessage,
                 'unseenCounter' => $unseenCounter,
-                ])->render();
+            ])->render();
         } catch (\Throwable $th) {
             throw new Exception($th->getMessage());
         }
@@ -331,15 +331,15 @@ class ChatifyMessenger
     public function inFavorite($user_id)
     {
         return Favorite::where('user_id', auth('sanctum')->user()->id)
-                        ->where('favorite_id', $user_id)->count() > 0
-                        ? true : false;
+            ->where('favorite_id', $user_id)->count() > 0
+            ? true : false;
     }
 
     public function inFavoriteInWeb($user_id)
     {
         return Favorite::where('user_id', auth('web')->user()->id)
-                        ->where('favorite_id', $user_id)->count() > 0
-                        ? true : false;
+            ->where('favorite_id', $user_id)->count() > 0
+            ? true : false;
     }
 
     /**
@@ -365,7 +365,7 @@ class ChatifyMessenger
         }
     }
 
-     public function makeInFavoriteInWeb($user_id, $action)
+    public function makeInFavoriteInWeb($user_id, $action)
     {
         if ($action > 0) {
             // Star
@@ -399,7 +399,7 @@ class ChatifyMessenger
                     $attachment = json_decode($msg->attachment);
                     // determine the type of the attachment
                     in_array(pathinfo($attachment->new_name, PATHINFO_EXTENSION), $this->getAllowedImages())
-                    ? array_push($images, $attachment->new_name) : '';
+                        ? array_push($images, $attachment->new_name) : '';
                 }
             }
         }
@@ -418,7 +418,7 @@ class ChatifyMessenger
             foreach ($this->fetchMessagesQuery($user_id)->get() as $msg) {
                 // delete file attached if exist
                 if (isset($msg->attachment)) {
-                    $path = config('chatify.attachments.folder').'/'.json_decode($msg->attachment)->new_name;
+                    $path = config('chatify.attachments.folder') . '/' . json_decode($msg->attachment)->new_name;
                     if (self::storage()->exists($path)) {
                         self::storage()->delete($path);
                     }
@@ -474,7 +474,7 @@ class ChatifyMessenger
     {
         if (!empty($user_avatar_name)) {
             // If no avatar, return default avatar
-            return asset('image/public/'.config('chatify.user_avatar.folder') . '/' . $user_avatar_name);
+            return asset('storage/' . config('chatify.user_avatar.folder') . '/' . $user_avatar_name);
         }
         return asset('assets/images/users/user-dummy-img.jpg');
         // return asset('image/public/'.config('chatify.user_avatar.folder') . '/' . $user_avatar_name);
@@ -488,6 +488,6 @@ class ChatifyMessenger
      */
     public function getAttachmentUrl($attachment_name)
     {
-        return asset('image/public/'.config('chatify.attachments.folder') . '/' . $attachment_name);
+        return asset('storage/' . config('chatify.attachments.folder') . '/' . $attachment_name);
     }
 }
