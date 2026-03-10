@@ -394,6 +394,7 @@ class MessagesController extends Controller
         foreach ($images as $key => $image) {
             $images[$key] = asset('storage/' . config('chatify.attachments.folder') . '/' . $image);
         }
+
         // send the response
         return Response::json([
             'shared' => $images ?? [],
